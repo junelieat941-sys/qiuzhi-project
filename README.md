@@ -9,7 +9,7 @@ This project aims to replicate the functionality of the "Agent Skills Guide" app
 ## 📂 项目结构
 ## 📂 Structure
 
--   **`quizhi-creative`**：核心应用程序。包含技能生成器、概念指南及图形化导出功能。
+-   **`qiuzhi-creative`**：核心应用程序。包含技能生成器、概念指南及图形化导出功能。
     The core application, featuring a skill generator, concept guide, and graphical export capabilities.
 
 ---

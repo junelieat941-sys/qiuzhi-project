@@ -8,6 +8,7 @@ from PIL import Image
 LOGO_PATH = "assets/qiuzhi-restaurant-logo.png"
 OUTPUT_DIR = "output"
 
+# === 完整版大师级场景库 ===
 SCENARIOS = {
     "1": {"name": "春季新品海报 (Spring Poster)", "prompt": "Commercial photography of delicious spring food set menu, mint green and warm orange color palette, C4D style, 3D render, Pop Mart style, blind box toy style, cute and soft, volumetric lighting, high detail, 8k resolution, minimalist composition"},
     "2": {"name": "门店装修设计 (Shop Decoration)", "prompt": "Interior design of a modern trendy chinese restaurant, mint green and warm wood theme, cozy atmosphere, futuristic but warm, C4D render, isometric view, high ceiling, soft lighting, 8k resolution, architectural visualization"},
@@ -24,28 +25,19 @@ SCENARIOS = {
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def remove_white_bg(img, threshold=220):
-    img = img.convert("RGBA")
-    datas = img.getdata()
-    new_data = []
-    for item in datas:
-        brightness = (item[0] + item[1] + item[2]) / 3
-        if brightness > threshold:
-            new_data.append((255, 255, 255, 0))
-        elif brightness > threshold - 30:
-            alpha = int(255 * (threshold - brightness) / 30)
-            new_data.append((item[0], item[1], item[2], alpha))
-        else:
-            new_data.append(item)
-    img.putdata(new_data)
-    return img
-
 def add_logo(bg_path, logo_path, output_path):
     try:
         bg = Image.open(bg_path).convert("RGBA")
         logo = Image.open(logo_path).convert("RGBA")
         
-        logo = remove_white_bg(logo)
+        datas = logo.getdata()
+        new_data = []
+        for item in datas:
+            if item[0] > 240 and item[1] > 240 and item[2] > 240:
+                new_data.append((255, 255, 255, 0))
+            else:
+                new_data.append(item)
+        logo.putdata(new_data)
 
         target_width = int(bg.width * 0.35)
         ratio = target_width / logo.width
@@ -58,9 +50,8 @@ def add_logo(bg_path, logo_path, output_path):
         overlay = Image.new("RGBA", bg.size, (0, 0, 0, 0))
         overlay.paste(logo, (x, y), logo)
         final = Image.alpha_composite(bg, overlay)
-        
         final.save(output_path)
-        print("✅ Logo 已合成 (智能去底+贴角)")
+        print("✅ Logo 已合成")
         return True
     except Exception as e:
         print(f"❌ Logo 错误: {e}")
@@ -100,13 +91,15 @@ def generate(scenario_key):
 def main():
     while True:
         clear_screen()
-        print("\n=== 秋芝创意中心 (Pro Max) ===")
+        print("\n=== 秋芝创意中心 (Pro Max 版) ===")
+        # 按顺序显示
         for i in range(1, 11):
             key = str(i)
-            print(f"[{key:>2}] {SCENARIOS[key]['name']}")
+            if key in SCENARIOS:
+                print(f"[{key:>2}] {SCENARIOS[key]['name']}")
         print("[ q] 退出")
         
-        c = input("\n👉 请输入选项: ").strip().lower()
+        c = input("\n> ").strip().lower()
         if c == 'q': break
         if c in SCENARIOS:
             generate(c)
